@@ -1,0 +1,31 @@
+{
+    "authConfig": {
+        "Username": "admin",
+        "Password": "123456",
+        "Enable2FA": false
+    },
+    "databaseConfig": {
+        "Driver": "mysql",
+        "Host": "127.0.0.1",
+        "Port": "13306",
+        "Database": "tomato",
+        "Username": "root",
+        "Password": "123456",
+        "Charset": "utf8mb4"
+    },
+    "user": {
+        "Username": "Aoao",
+        "Gravatar": "/",
+        "Url": "",
+        "Description": "(⊙o⊙)？"
+    },
+    "site": {
+        "Path": "http://localhost:7891/",
+        "Title": "这里是Ao的博客",
+        "Icon": "https://leafbackaut.cn/file/tomato.ico",
+        "Bili": "https://space.bilibili.com/699419214",
+        "Github": "https://github.com/buao234613",
+        "Twitter": "/",
+        "Mail": "buao234613@163.com"
+    }
+}
