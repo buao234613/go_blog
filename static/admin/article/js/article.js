@@ -23,7 +23,9 @@ function deleteArticle(){
     xhr.onreadystatechange = function (){
         if (xhr.readyState === XMLHttpRequest.DONE){
             if (xhr.status === 200){
-                window.location.reload()                }
+                alert("删除成功")
+                window.location.href="/admin/article"
+            }
             else {
                 tip.innerText = "发送失败"
                 setTimeout(() => {

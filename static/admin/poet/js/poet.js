@@ -20,7 +20,8 @@ function addPoet(){
     xhr.onreadystatechange = function (){
         if (xhr.readyState === XMLHttpRequest.DONE){
             if (xhr.status === 200){
-                window.location.reload()
+                alert("添加成功")
+                window.location.href="/admin/poet"
             }
             else {
                 tip.innerText = "发送失败"
@@ -76,7 +77,8 @@ function updatePoet(){
     xhr.onreadystatechange = function (){
         if (xhr.readyState === XMLHttpRequest.DONE){
             if (xhr.status === 200){
-                window.location.reload()
+                alert("修改成功")
+                window.location.href="/admin/poet"
             }
             else {
                 tip.innerText = "发送失败"
@@ -112,6 +114,7 @@ function deletePoet(){
     xhr.onreadystatechange = function (){
         if (xhr.readyState === XMLHttpRequest.DONE){
             if (xhr.status === 200){
+                alert("删除成功")
                 window.location.reload()                }
             else {
                 tip.innerText = "发送失败"

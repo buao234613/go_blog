@@ -59,7 +59,8 @@ function addArticle(){
     xhr.onreadystatechange = function (){
         if (xhr.readyState === XMLHttpRequest.DONE){
             if (xhr.status === 200){
-                window.location.reload()
+                alert("上传成功")
+                window.location.href="/admin/article"
             }
             else {
                 window.alert('上传失败')

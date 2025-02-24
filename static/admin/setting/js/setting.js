@@ -40,6 +40,7 @@ function changeConfig(){
     xhr.onreadystatechange = function (){
         if (xhr.readyState === XMLHttpRequest.DONE){
             if (xhr.status === 200){
+                alert("修改成功")
                 window.location.reload()
             }
             else {
