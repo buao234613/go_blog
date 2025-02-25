@@ -3,6 +3,7 @@ package models
 import (
 	"WhiteBlog/config"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -107,6 +108,16 @@ func GetArticlesByClass(id int) ([]FormatArticle, error) {
 	sort.Slice(formatArticles, func(i, j int) bool {
 		return formatArticles[i].CreatedDate.After(formatArticles[j].CreatedDate)
 	})
+	return formatArticles, nil
+}
+
+func GetArticleByIds(ids []string) ([]FormatArticle, error) {
+	var formatArticles []FormatArticle
+
+	err := config.GetDatabase().Where("id in (?)", strings.Join(ids, ",")).Find(&formatArticles).Error
+	if err != nil {
+		return nil, err
+	}
 	return formatArticles, nil
 }
 
