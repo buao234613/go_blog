@@ -5,8 +5,10 @@ import (
 	"WhiteBlog/models"
 	"encoding/json"
 	"fmt"
+	"github.com/olivere/elastic/v7"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"log"
 	"os"
 )
 
@@ -21,6 +23,7 @@ func init() {
 	databaseConfig := config.GetConfig().DatabaseConfig
 	switch config.GetConfig().DatabaseConfig.Driver {
 	case "mysql":
+		//初始化MySQL
 		dsn := fmt.Sprintf("%s:%s@(%s:%s)/%s?charset=%s&parseTime=true",
 			databaseConfig.Username,
 			databaseConfig.Password,
@@ -28,6 +31,7 @@ func init() {
 			databaseConfig.Port,
 			databaseConfig.Database,
 			databaseConfig.Charset)
+		log.Println(dsn)
 		conn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 		if err != nil {
 			return
@@ -35,7 +39,7 @@ func init() {
 		config.Database = conn
 	}
 	//  迁移表
-	config.Database.AutoMigrate(
+	err = config.Database.AutoMigrate(
 		&models.Class{},
 		&models.Article{},
 		&models.Image{},
@@ -43,4 +47,16 @@ func init() {
 		&models.Poet{},
 		&models.File{},
 	)
+	// 初始化 es
+	esConfig := config.GetConfig().ESConfig
+	url := fmt.Sprintf("http://%s:%s", esConfig.Host, esConfig.Port)
+	esClient, err := elastic.NewClient(elastic.SetURL(url), elastic.SetSniff(false))
+	if err != nil {
+		log.Fatalf("elasticsearch 客户端初始化失败: %v", err)
+	}
+	config.Client = esClient
+	err = models.IndexArticles()
+	if err != nil {
+		log.Fatalf("IndexArticles error: %v", err)
+	}
 }

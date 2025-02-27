@@ -84,6 +84,7 @@ func SetRoutes(r *gin.Engine) {
 	//
 	r.GET("/article", article.Index)
 	r.GET("/article/:id", article.Article)
+	r.GET("/searchpage", article.Search)
 	//
 	//  友链
 	//

@@ -24,3 +24,6 @@ func BadRequest(c *gin.Context, msg string) {
 		"msg": msg,
 	})
 }
+func NotFound(c *gin.Context, msg string) {
+	c.JSON(http.StatusNotFound, gin.H{"msg": msg})
+}

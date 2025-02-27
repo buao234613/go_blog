@@ -3,30 +3,31 @@
     src: url("/static/common/font.ttf");
 }
 
-body{
+body {
     margin: 0;
     color: #303030;
     background-color: white;
     font-family: 'custom-font', system-ui;
 }
-body::-webkit-scrollbar{
+
+body::-webkit-scrollbar {
     width: 0.5rem;
     background-color: white;
 }
-body::-webkit-scrollbar-thumb{
+body::-webkit-scrollbar-thumb {
     background-color: #F0F0F0;
 }
 /**/
-#navigation{
+#navigation {
     width: 100%;
     height: 4rem;
     position: fixed;
     background-color: white;
 }
-#navigation h2{
+#navigation h2 {
     margin-left: 3rem;
 }
-#list{
+#list {
     height: 100%;
     top: 0;
     right: 0;
@@ -34,7 +35,7 @@ body::-webkit-scrollbar-thumb{
     display: flex;
     margin-right: 5rem;
 }
-#list div{
+#list div {
     width: 6rem;
     height: 100%;
     display: flex;
@@ -42,7 +43,7 @@ body::-webkit-scrollbar-thumb{
     justify-content: center;
     transition: 0.2s ease-in-out;
 }
-#list a{
+#list a {
     color: #303030;
     text-decoration: none;
     font-size: 1rem;

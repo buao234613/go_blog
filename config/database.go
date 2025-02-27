@@ -5,13 +5,13 @@ import (
 )
 
 type DatabaseConfig struct {
-	Driver   string
-	Host     string
-	Port     string
-	Database string
-	Username string
-	Password string
-	Charset  string
+	Driver   string `json:"driver"`
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+	Database string `json:"database"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Charset  string `json:"charset"`
 	//Local    string
 }
 
