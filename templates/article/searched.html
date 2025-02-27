@@ -1,0 +1,26 @@
+{{ define "searched.html" }}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/article/css/index.css">
+    <script type="application/javascript" src="/static/article/js/index.js"></script>
+    <link rel="shortcut icon" href="{{.config.Site.Icon}}">
+    <title>文章</title>
+</head>
+<body>
+<div id="articles">
+    {{range $key,$value := .articles}}
+    <div class="article">
+        <h2><a href="/article/{{$value.ID}}">{{$value.Title}}</a></h2>
+        <div>
+            <span><b>分类：</b>{{$value.Class}}</span>
+            <span><b>创建时间：</b>{{ $value.CreatedDate | formatDate }}</span>
+        </div>
+    </div>
+    {{end}}
+    <br>
+</div>
+{{template "base/base.html" .}}
+</body>
+</html>
+{{end}}

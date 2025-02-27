@@ -14,9 +14,11 @@ body::-webkit-scrollbar {
     width: 0.5rem;
     background-color: white;
 }
+
 body::-webkit-scrollbar-thumb {
     background-color: #F0F0F0;
 }
+
 /**/
 #navigation {
     width: 100%;
@@ -24,9 +26,11 @@ body::-webkit-scrollbar-thumb {
     position: fixed;
     background-color: white;
 }
+
 #navigation h2 {
     margin-left: 3rem;
 }
+
 #list {
     height: 100%;
     top: 0;
@@ -35,6 +39,7 @@ body::-webkit-scrollbar-thumb {
     display: flex;
     margin-right: 5rem;
 }
+
 #list div {
     width: 6rem;
     height: 100%;
@@ -43,6 +48,7 @@ body::-webkit-scrollbar-thumb {
     justify-content: center;
     transition: 0.2s ease-in-out;
 }
+
 #list a {
     color: #303030;
     text-decoration: none;
