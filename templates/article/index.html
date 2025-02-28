@@ -9,12 +9,6 @@
 </head>
 <body>
 <div id="articles">
-    <div class="search-box">
-        <form action="/search" method="GET">
-            <input type="text" name="query" placeholder="搜索文章">
-            <button type="submit">搜索</button>
-        </form>
-    </div>
     <div id="articles_class">
         {{if .class }}
         <h2>分类 {{.class}} 下的文章 / {{len .articles}}篇</h2>
@@ -22,7 +16,12 @@
         <h2>所有文章 / {{len .articles}}篇</h2>
         {{end}}
     </div>
-
+    <div class="search-box">
+        <form action="/search" method="GET">
+            <input type="text" name="query" placeholder="搜索文章">
+            <button type="submit">搜索</button>
+        </form>
+    </div>
     {{range $key,$value := .articles}}
     <div class="article">
         <h2><a href="/article/{{$value.ID}}">{{$value.Title}}</a></h2>

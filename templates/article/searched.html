@@ -9,6 +9,7 @@
 </head>
 <body>
 <div id="articles">
+    {{if len .articles}}
     {{range $key,$value := .articles}}
     <div class="article">
         <h2><a href="/article/{{$value.ID}}">{{$value.Title}}</a></h2>
@@ -16,6 +17,11 @@
             <span><b>分类：</b>{{$value.Class}}</span>
             <span><b>创建时间：</b>{{ $value.CreatedDate | formatDate }}</span>
         </div>
+    </div>
+    {{end}}
+    {{else}}
+    <div>
+        <h1 style="margin: auto">Not match any article!</h1>
     </div>
     {{end}}
     <br>
