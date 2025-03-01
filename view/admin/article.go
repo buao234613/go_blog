@@ -4,7 +4,10 @@ import (
 	"WhiteBlog/common"
 	"WhiteBlog/config"
 	"WhiteBlog/models"
+	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/olivere/elastic/v7"
+	"log"
 	"strconv"
 )
 
@@ -50,6 +53,7 @@ func Article(c *gin.Context) {
 // ArticleAdd 新增文章
 func ArticleAdd(c *gin.Context) {
 	theConfig := config.GetConfig()
+	client := config.GetClient()
 	//  post请求
 	if c.Request.Method == "POST" {
 		form := Form{}
@@ -61,6 +65,11 @@ func ArticleAdd(c *gin.Context) {
 		err = form.Article.CreateArticle()
 		if err != nil {
 			common.ServerErr(c, "Create Article Fail")
+			return
+		}
+		err = Create(client, form.Article)
+		if err != nil {
+			common.ServerErr(c, "Create Index Fail")
 			return
 		}
 		models.UpdateArticleID(form.Image, form.Article.ID)
@@ -82,6 +91,7 @@ func ArticleAdd(c *gin.Context) {
 // ArticleEdit 编辑文章
 func ArticleEdit(c *gin.Context) {
 	theConfig := config.GetConfig()
+	client := config.GetClient()
 	//  post请求
 	if c.Request.Method == "POST" {
 		form := Form{}
@@ -93,6 +103,11 @@ func ArticleEdit(c *gin.Context) {
 		err = form.Article.UpdateArticle()
 		if err != nil {
 			common.ServerErr(c, "Update Class Err")
+			return
+		}
+		err = Update(client, form.Article)
+		if err != nil {
+			common.ServerErr(c, "Update Index Fail")
 			return
 		}
 		models.UpdateArticleID(form.Image, form.Article.ID)
@@ -133,6 +148,7 @@ func ArticleEdit(c *gin.Context) {
 // ArticleDelete 删除文章
 func ArticleDelete(c *gin.Context) {
 	article := models.Article{}
+	client := config.GetClient()
 	err := c.ShouldBindJSON(&article)
 	if err != nil {
 		common.BadRequest(c, "Invalid Data")
@@ -143,5 +159,70 @@ func ArticleDelete(c *gin.Context) {
 		common.ServerErr(c, "Delete Fail")
 		return
 	}
+	err = Delete(client, article)
+	if err != nil {
+		common.ServerErr(c, "Delete Index Fail")
+		return
+	}
 	common.Ok(c, "Delete Success")
+}
+
+// Create 向 Elasticsearch 中插入文章
+func Create(client *elastic.Client, article models.Article) error {
+	class := models.Class{}
+	class.ID = article.ClassID
+	err := class.GetClass()
+
+	formatArticle := models.FormatArticle{
+		ID:          article.ID,
+		Title:       article.Title,
+		Class:       class.Name,
+		CreatedDate: article.CreatedDate,
+		UpdatedDate: article.UpdatedDate,
+	}
+	log.Printf("正在将文章保存到 Elasticsearch : %v", article)
+	// 将文章保存到 Elasticsearch
+	_, err = client.Update().
+		Index(common.ArticleIndex).
+		Id(formatArticle.Class).
+		Doc(formatArticle).
+		Upsert(formatArticle).
+		Do(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Update 更新 Elasticsearch 中的文章
+func Update(client *elastic.Client, article models.Article) error {
+	log.Printf("正在将文章更新到 Elasticsearch : %v", article)
+	// 使用 Script 更新文章内容
+	_, err := client.Update().
+		Index(common.ArticleIndex).
+		Id(strconv.Itoa(article.ID)).
+		Script(elastic.NewScript(
+			`ctx._source.content=params.content`,
+		).Params(map[string]interface{}{
+			"content": article.Content,
+		})).
+		Do(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Delete 从 Elasticsearch 中删除文章
+func Delete(client *elastic.Client, article models.Article) error {
+	log.Printf("正在删除Elasticsearch 中article: %v", article)
+	// 删除文章
+	_, err := client.Delete().
+		Index(common.ArticleIndex).
+		Id(strconv.Itoa(article.ID)).
+		Do(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"WhiteBlog/common"
 	"WhiteBlog/config"
 	"context"
 	"encoding/json"
@@ -10,16 +11,15 @@ import (
 	"log"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
 )
 
 type Article struct {
 	BaseModel
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	Title   string
+	Content string
 	//  外键
-	ClassID int `json:"class_id"`
+	ClassID int
 }
 
 type FormatArticle struct {
@@ -30,7 +30,7 @@ type FormatArticle struct {
 	UpdatedDate time.Time `json:"updated_date"`
 }
 
-var index = "articles"
+var index = common.ArticleIndex
 
 // GetArticles 获取所有文章标题
 func GetArticles() ([]FormatArticle, error) {
@@ -123,7 +123,7 @@ func GetArticlesByClass(id int) ([]FormatArticle, error) {
 func GetArticleByIds(ids []string) ([]FormatArticle, error) {
 	var formatArticles []FormatArticle
 	var articles []Article
-	err := config.GetDatabase().Where("id in (?)", strings.Join(ids, ",")).Find(&articles).Error
+	err := config.GetDatabase().Where("id in (?)", ids).Find(&articles).Error
 	if err != nil {
 		return nil, err
 	}
@@ -183,9 +183,7 @@ func IndexArticles() error {
             "mappings": {
                 "properties": {
                     "title": { "type": "text" },
-                    "author": { "type": "text" },
                     "class": { "type": "text" },
-                    "content": { "type": "text" },
                     "created_date": { "type": "date" },
                     "updated_date": { "type": "date" }
                 }
@@ -281,6 +279,7 @@ func SearchArticlesFromES(q string) (result []FormatArticle, err error) {
 		}
 		ids = append(ids, strconv.Itoa(article.ID))
 	}
+	log.Println("ids", ids)
 	result, err = GetArticleByIds(ids)
 	if err != nil {
 		return nil, err
