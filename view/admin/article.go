@@ -5,6 +5,7 @@ import (
 	"WhiteBlog/config"
 	"WhiteBlog/models"
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
 	"log"
@@ -105,7 +106,7 @@ func ArticleEdit(c *gin.Context) {
 			common.ServerErr(c, "Update Class Err")
 			return
 		}
-		err = Update(client, form.Article)
+		err = Create(client, form.Article)
 		if err != nil {
 			common.ServerErr(c, "Update Index Fail")
 			return
@@ -172,6 +173,9 @@ func Create(client *elastic.Client, article models.Article) error {
 	class := models.Class{}
 	class.ID = article.ClassID
 	err := class.GetClass()
+	if err != nil {
+		return fmt.Errorf("获取分类信息失败: %v", err)
+	}
 
 	formatArticle := models.FormatArticle{
 		ID:          article.ID,
@@ -180,38 +184,26 @@ func Create(client *elastic.Client, article models.Article) error {
 		CreatedDate: article.CreatedDate,
 		UpdatedDate: article.UpdatedDate,
 	}
-	log.Printf("正在将文章保存到 Elasticsearch : %v", article)
+	log.Printf("正在将文章保存到 Elasticsearch : %v", formatArticle)
+
 	// 将文章保存到 Elasticsearch
 	_, err = client.Update().
 		Index(common.ArticleIndex).
-		Id(formatArticle.Class).
+		Id(strconv.Itoa(formatArticle.ID)). // 使用文章 ID 作为文档 ID
 		Doc(formatArticle).
 		Upsert(formatArticle).
 		Do(context.Background())
 	if err != nil {
-		return err
+		return fmt.Errorf("保存文章到 Elasticsearch 失败: %v", err)
 	}
 	return nil
 }
 
-// Update 更新 Elasticsearch 中的文章
-func Update(client *elastic.Client, article models.Article) error {
-	log.Printf("正在将文章更新到 Elasticsearch : %v", article)
-	// 使用 Script 更新文章内容
-	_, err := client.Update().
-		Index(common.ArticleIndex).
-		Id(strconv.Itoa(article.ID)).
-		Script(elastic.NewScript(
-			`ctx._source.content=params.content`,
-		).Params(map[string]interface{}{
-			"content": article.Content,
-		})).
-		Do(context.Background())
-	if err != nil {
-		return err
-	}
-	return nil
-}
+//// Update 更新 Elasticsearch 中的文章
+//func Update(client *elastic.Client, article models.Article) error {
+//	log.Printf("正在将文章更新到 Elasticsearch : %v", article)
+//
+//}
 
 // Delete 从 Elasticsearch 中删除文章
 func Delete(client *elastic.Client, article models.Article) error {
